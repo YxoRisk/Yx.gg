@@ -367,14 +367,14 @@ local CamlockState = false
 
 -- Generate a random prediction value between 0.192311 and 0.19877
 local function GenerateRandomPrediction()
-    return math.random(192311, 192324) / 1000000
+    return math.random(192311, 2179) / 1000000
 end
 
 local Prediction = GenerateRandomPrediction()
 local HorizontalPrediction = 0
-local VerticalPrediction = 0
+local VerticalPrediction = 0.06
 local XPrediction = 999999
-local YPrediction = 999999
+local YPrediction = 20
 
 local Players = game:GetService("Players")
 local LP = Players.LocalPlayer
