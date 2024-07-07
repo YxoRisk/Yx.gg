@@ -1,0 +1,647 @@
+local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/DrRay-UI-Library/main/DrRay.lua"))()
+local window = DrRayLibrary:Load("Yx.GGs", "Default")
+local tab = DrRayLibrary.newTab("Desync", "ImageIdHere")
+tab.newToggle("Desync (method Freeze)", "2 second per lag", false, function(toggleState)
+    if toggleState then
+        -- Dapatkan karakter pemain
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+-- Dapatkan karakter pemain
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+-- Dapatkan karakter pemain
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Daftar bagian yang akan diatur anchornya
+local partsToFreeze = {
+    "Head",
+    "UpperTorso",
+    "HumanoidRootPart",
+    "LowerTorso",
+    "LeftHand",
+    "RightHand",
+    "LeftLowerArm",
+    "RightLowerArm",
+    "LeftUpperArm",
+    "RightUpperArm",
+    "LeftFoot",
+    "LeftLowerLeg",
+    "LeftUpperLeg",
+    "RightLowerLeg",
+    "RightFoot",
+    "RightUpperLeg"
+}
+
+-- Variabel untuk mengontrol aktivasi/deaktivasi skrip dan durasi fase
+_G.scriptEnabled = true
+_G.unanchorDuration = 3 -- Durasi fase unanchor dalam detik
+
+-- Fungsi untuk mengatur anchor pada bagian karakter
+local function setAnchored(state)
+    for _, partName in ipairs(partsToFreeze) do
+        local part = character:FindFirstChild(partName)
+        if part then
+            part.Anchored = state
+        end
+    end
+end
+
+-- Fungsi utama untuk menjalankan proses anchoring dan unanchoring
+local function toggleAnchoring()
+    while true do
+        if _G.scriptEnabled then
+            -- Fase anchor dengan durasi acak antara 400ms dan 600ms
+            setAnchored(true)
+            wait(math.random(400, 600) / 1000)
+            
+            -- Fase unanchor dengan durasi yang ditetapkan
+            setAnchored(false)
+            wait(_G.unanchorDuration)
+        else
+            wait(1) -- Tunggu 1 detik sebelum cek kembali jika skrip dinonaktifkan
+        end
+    end
+end
+
+-- Cek apakah karakter sudah ada
+if character then
+    -- Jalankan toggleAnchoring dalam coroutine terpisah agar tidak menghalangi thread utama
+    coroutine.wrap(toggleAnchoring)()
+end
+
+    else
+        _G.scriptEnabled = false
+    end
+end)
+
+tab.newToggle("Desync (Walking) BETA", "Dont use still cant turn off", false, function(niggers)
+    if niggers then
+        _GenableScript = true  -- Setel ini ke true atau false untuk mengontrol apakah skrip akan dijalankan atau dihancurkan
+
+if _GenableScript then
+    local isWalking = true
+    local Players = game:GetService("Players")
+    local RunService = game:GetService("RunService")
+    local LocalPlayer = Players.LocalPlayer
+    local Character = LocalPlayer.Character
+
+    -- Menentukan apakah pemain berjalan atau tidak
+    Character.Humanoid.Running:Connect(function(speed)
+        isWalking = speed > 0
+    end)
+
+    -- Menghubungkan ke RunService.Heartbeat untuk memutar karakter jika tidak berjalan
+    RunService.Heartbeat:Connect(function()
+        if not isWalking then
+            Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(0.5), 0)
+            
+            -- Menyimpan dan memulihkan kecepatan karakter untuk efek rotasi
+            local originalVelocity = Character.HumanoidRootPart.Velocity    
+            Character.HumanoidRootPart.Velocity = Vector3.new(0, -16384, 0)
+            RunService.RenderStepped:Wait()
+            Character.HumanoidRootPart.Velocity = originalVelocity
+        else
+            -- Jika karakter berjalan, lakukan perubahan pada AssemblyLinearVelocity
+            local originalAssemblyVelocity = Character.HumanoidRootPart.AssemblyLinearVelocity            
+            Character.HumanoidRootPart.AssemblyLinearVelocity = Vector3.new(math.random(-2000, 6000), math.random(-13000, 3000), math.random(-6000, 2000))
+            
+            RunService.RenderStepped:Wait()
+            Character.HumanoidRootPart.AssemblyLinearVelocity = originalAssemblyVelocity
+        end
+    end)
+else
+    -- Menghancurkan skrip jika _GenableScript diatur ke false
+    script:Destroy()
+end
+
+      else
+        _GenableScript = false
+    end
+end)
+
+tab.newToggle("Desync(Method Speed Lag)", "bapakku garena", false, function(State)
+    if State then
+        -- Desync script using speed method with gradual slowdown in a loop
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- Settings
+local normalSpeed = 16
+local slowSpeed = 2
+local desyncDuration = 0.3 -- duration of desync in seconds (adjust as needed)
+local minRandomDelay = 0 -- minimum random delay before returning to normal speed (in seconds)
+local maxRandomDelay = 4 -- maximum random delay before returning to normal speed (in seconds)
+
+-- Function to set speed
+local function setSpeed(speed)
+    humanoid.WalkSpeed = speed
+end
+
+-- Function to generate random delay
+local function randomDelay(minDelay, maxDelay)
+    return math.random() * (maxDelay - minDelay) + minDelay
+end
+
+-- Main loop function
+local function mainLoop()
+    while true do
+        -- Set to slow speed to cause desync
+        setSpeed(slowSpeed)
+        
+        -- Hold slow speed for the duration of desync
+        wait(desyncDuration)
+        
+        -- Reset to normal speed with random delay
+        setSpeed(normalSpeed)
+        local delay = randomDelay(minRandomDelay, maxRandomDelay)
+        wait(delay)
+    end
+end
+
+-- Enable/disable script based on _genablescript
+local _genablescript = true  -- Set this to true to enable the script, false to disable
+
+if _genablescript then
+    mainLoop()
+else
+    -- Remove script if not enabled
+    script:Destroy()
+end
+
+    else
+        local _genablescript = false
+    end
+end)
+
+local tab = DrRayLibrary.newTab("Locky", "ImageIdHere")
+tab.newToggle("Flick Circle aimbot", "auto flick", false, function(niggerLeak)
+    if niggerLeak then
+-- Ambil pemain lokal dan kamera
+local player = game.Players.LocalPlayer
+local playerCamera = game.Workspace.CurrentCamera
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+-- Global untuk mengontrol apakah script aktif
+_G.enableScript = true
+
+-- Pastikan ada pengaturan untuk Silent.Settings.Circle
+local Silent = {
+    Settings = {
+        Circle = {
+            Visible = true,
+            Color = Color3.new(1, 0, 0), -- Merah
+            Transparency = 0.5,
+            Thickness = 2,
+            NumSides = 100,
+            Radius = 10,
+            Filled = false
+        },
+        AimPart = "LowerTorso" -- Bagian karakter yang akan diincar
+    }
+}
+
+-- Buat lingkaran FOV menggunakan Drawing API
+local FOVCircle = Drawing.new("Circle")
+FOVCircle.Visible = Silent.Settings.Circle.Visible
+FOVCircle.Color = Silent.Settings.Circle.Color
+FOVCircle.Transparency = Silent.Settings.Circle.Transparency
+FOVCircle.Thickness = Silent.Settings.Circle.Thickness
+FOVCircle.NumSides = Silent.Settings.Circle.NumSides
+FOVCircle.Radius = playerCamera.ViewportSize.X / Silent.Settings.Circle.Radius
+FOVCircle.Filled = Silent.Settings.Circle.Filled
+FOVCircle.Position = Vector2.new(playerCamera.ViewportSize.X / 2, playerCamera.ViewportSize.Y / 2)
+
+-- Fungsi untuk memperbarui posisi lingkaran FOV saat ukuran viewport berubah
+local function updateFOVCirclePosition()
+    FOVCircle.Position = Vector2.new(playerCamera.ViewportSize.X / 2, playerCamera.ViewportSize.Y / 2)
+    FOVCircle.Radius = playerCamera.ViewportSize.X / Silent.Settings.Circle.Radius
+end
+
+-- Tambahkan listener untuk memperbarui posisi dan radius ketika ukuran viewport berubah
+local viewportSizeConnection = playerCamera:GetPropertyChangedSignal("ViewportSize"):Connect(updateFOVCirclePosition)
+
+-- Panggil fungsi untuk mengatur posisi awal dan radius
+updateFOVCirclePosition()
+
+-- Fungsi untuk memeriksa apakah pemain melompat
+local function IsPlayerJumping(player)
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        local humanoid = player.Character.Humanoid
+        local state = humanoid:GetState()
+        return state == Enum.HumanoidStateType.Jumping or state == Enum.HumanoidStateType.Freefall
+    end
+    return false
+end
+
+-- Fungsi untuk memeriksa apakah ada dinding antara kamera dan target
+local function IsTargetVisible(targetPart)
+    local origin = playerCamera.CFrame.Position
+    local direction = (targetPart.Position - origin).unit * (targetPart.Position - origin).magnitude
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {player.Character}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+
+    local rayResult = game.Workspace:Raycast(origin, direction, raycastParams)
+    return rayResult and rayResult.Instance:IsDescendantOf(targetPart.Parent) or not rayResult
+end
+
+-- Fungsi untuk memprediksi posisi lompatan pemain
+local function PredictPlayerPosition(player, deltaTime)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local humanoidRootPart = player.Character.HumanoidRootPart
+        local velocity = humanoidRootPart.Velocity
+        return humanoidRootPart.Position + (velocity * deltaTime)
+    end
+    return nil
+end
+
+-- Fungsi untuk mendapatkan pemain terdekat dalam lingkaran FOV yang sedang melompat
+local function GetClosestJumpingPlayer(deltaTime)
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+
+    for _, otherPlayer in ipairs(Players:GetPlayers()) do
+        if otherPlayer ~= player and otherPlayer.Character and IsPlayerJumping(otherPlayer) then
+            local predictedPosition = PredictPlayerPosition(otherPlayer, deltaTime)
+            if predictedPosition then
+                local screenPosition = playerCamera:WorldToViewportPoint(predictedPosition)
+                local distance = (Vector2.new(screenPosition.X, screenPosition.Y) - FOVCircle.Position).Magnitude
+                if distance < shortestDistance and distance <= FOVCircle.Radius then
+                    if IsTargetVisible(otherPlayer.Character[Silent.Settings.AimPart]) then
+                        closestPlayer = otherPlayer
+                        shortestDistance = distance
+                    end
+                end
+            end
+        end
+    end
+
+    return closestPlayer
+end
+
+-- Listener untuk RenderStepped
+local renderSteppedConnection
+
+local function enableScript()
+    -- Listener untuk RenderStepped
+    renderSteppedConnection = RunService.RenderStepped:Connect(function(deltaTime)
+        if _G.enableScript then
+            local targetedPlayer = GetClosestJumpingPlayer(deltaTime)
+            if targetedPlayer and targetedPlayer.Character and targetedPlayer.Character:FindFirstChild(Silent.Settings.AimPart) then
+                local targetedPlayerCharacter = targetedPlayer.Character
+                local targetedPlayerAimPart = targetedPlayerCharacter[Silent.Settings.AimPart]
+                local predictedPosition = PredictPlayerPosition(targetedPlayer, deltaTime)
+                if predictedPosition then
+                    local currentCFrame = playerCamera.CFrame
+                    local newCFrame = CFrame.new(currentCFrame.Position, predictedPosition)
+                    local speed = 0.9 -- 1 adalah kecepatan penuh, semakin mendekati 1 semakin cepat
+                    playerCamera.CFrame = currentCFrame:Lerp(newCFrame, speed)
+                end
+            end
+
+            -- Hilangkan aimbot jika pemain mulai jatuh
+            if targetedPlayer and not IsPlayerJumping(targetedPlayer) then
+                targetedPlayer = nil
+            end
+        else
+            -- Hapus lingkaran FOV dan putuskan koneksi
+            FOVCircle:Remove()
+            if renderSteppedConnection then
+                renderSteppedConnection:Disconnect()
+                renderSteppedConnection = nil
+            end
+            if viewportSizeConnection then
+                viewportSizeConnection:Disconnect()
+                viewportSizeConnection = nil
+            end
+        end
+    end)
+end
+
+-- Jalankan script jika enableScript true
+if _G.enableScript then
+    enableScript()
+end
+
+-- Monitor perubahan pada enableScript
+_G.enableScript = true  -- Inisialisasi
+_G.__oldEnableScript = _G.enableScript
+
+-- Periksa perubahan pada enableScript secara berkala
+RunService.Heartbeat:Connect(function()
+    if _G.enableScript ~= _G.__oldEnableScript then
+        if _G.enableScript then
+            enableScript()
+        else
+            -- Hapus lingkaran FOV dan putuskan koneksi
+            FOVCircle:Remove()
+            if renderSteppedConnection then
+                renderSteppedConnection:Disconnect()
+                renderSteppedConnection = nil
+            end
+            if viewportSizeConnection then
+                viewportSizeConnection:Disconnect()
+                viewportSizeConnection = nil
+            end
+        end
+        _G.__oldEnableScript = _G.enableScript
+    end
+end)
+
+    else
+        _G.enableScript = false
+    end
+end)
+
+tab.newButton("Camlock (The Best Lock 90+)", "Warning! Have Auto airshot func", function()
+    local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = game.Players.LocalPlayer:GetMouse()
+local CamlockState = false
+
+-- Generate a random prediction value between 0.192311 and 0.19877
+local function GenerateRandomPrediction()
+    return math.random(192311, 192324) / 1000000
+end
+
+local Prediction = GenerateRandomPrediction()
+local HorizontalPrediction = 0
+local VerticalPrediction = 0
+local XPrediction = 999999
+local YPrediction = 999999
+
+local Players = game:GetService("Players")
+local LP = Players.LocalPlayer
+local Mouse = LP:GetMouse()
+
+local Locked = true
+
+getgenv().Key = "q"
+
+-- Create a part to visualize the locked target
+local VisualPart = Instance.new("Part")
+VisualPart.Anchored = true
+VisualPart.CanCollide = false
+VisualPart.Transparency = 0.5
+VisualPart.BrickColor = BrickColor.new("Bright red")
+VisualPart.Shape = Enum.PartType.Ball
+VisualPart.Size = Vector3.new(1, 1, 1)
+VisualPart.Material = Enum.Material.Neon -- Set the material to neon
+VisualPart.Parent = workspace
+
+function FindNearestEnemy()
+    local ClosestDistance, ClosestPlayer = math.huge, nil
+    local CenterPosition =
+        Vector2.new(
+        game:GetService("GuiService"):GetScreenResolution().X / 2,
+        game:GetService("GuiService"):GetScreenResolution().Y / 2
+    )
+
+    for _, Player in ipairs(game:GetService("Players"):GetPlayers()) do
+        if Player ~= LocalPlayer then
+            local Character = Player.Character
+            if Character and Character:FindFirstChild("UpperTorso") and Character.Humanoid.Health > 0 then
+                local Position, IsVisibleOnViewport =
+                    game:GetService("Workspace").CurrentCamera:WorldToViewportPoint(Character.UpperTorso.Position)
+
+                if IsVisibleOnViewport then
+                    local Distance = (CenterPosition - Vector2.new(Position.X, Position.Y)).Magnitude
+                    if Distance < ClosestDistance then
+                        -- Perform Raycast to check for obstructions
+                        local origin = workspace.CurrentCamera.CFrame.Position
+                        local direction = (Character.UpperTorso.Position - origin).Unit * 1000
+                        local raycastParams = RaycastParams.new()
+                        raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+                        raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+
+                        local raycastResult = workspace:Raycast(origin, direction, raycastParams)
+                        if raycastResult and raycastResult.Instance:IsDescendantOf(Character) then
+                            ClosestPlayer = Character
+                            ClosestDistance = Distance
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return ClosestPlayer
+end
+
+local enemy = nil
+
+-- Function to handle jump request and activate tool
+local function onTargetJump()
+    local LocalPlayer = Players.LocalPlayer
+    local LocalPlayerCharacter = LocalPlayer.Character
+    if LocalPlayerCharacter then
+        local tool = LocalPlayerCharacter:FindFirstChildWhichIsA("Tool")
+        if tool then
+            tool:Activate()
+        end
+    end
+end
+
+-- Function to aim the camera at the nearest enemy's UpperTorso or LowerTorso based on jumping status
+RunService.Heartbeat:Connect(
+    function()
+        if CamlockState == true then
+            if enemy then
+                local camera = workspace.CurrentCamera
+                local aimPart = enemy.UpperTorso
+                
+                -- Check if enemy is jumping
+                if enemy.Humanoid.FloorMaterial == Enum.Material.Air then
+                    aimPart = enemy:FindFirstChild("LowerTorso") or aimPart
+                    -- Activate tool when enemy is jumping
+                    onTargetJump()
+                end
+                
+                -- Check if local player is jumping
+                if LocalPlayer.Character and LocalPlayer.Character.Humanoid.FloorMaterial == Enum.Material.Air then
+                    aimPart = enemy:FindFirstChild("LowerTorso") or aimPart
+                end
+
+                local predictedPosition = aimPart.Position + aimPart.Velocity * Prediction
+                camera.CFrame = CFrame.new(camera.CFrame.p, predictedPosition)
+                
+                -- Update visual part position with prediction
+                VisualPart.Position = predictedPosition
+
+                -- Check if enemy's health is 5 or below
+                local enemyHumanoid = enemy:FindFirstChildOfClass("Humanoid")
+                if enemyHumanoid and enemyHumanoid.Health <= 5 then
+                    CamlockState = false
+                    enemy = nil
+                    state = true
+                    TextButton.Text = "Yx.GG Off :("
+                    VisualPart.Position = Vector3.new(0, 0, 0) -- Hide visual part
+                end
+            end
+
+            -- Check if local player's health is 5 or below
+            local localHumanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if localHumanoid and localHumanoid.Health <= 2 then
+                CamlockState = false
+                enemy = nil
+                state = true
+                TextButton.Text = "Yx.GG Off :("
+                VisualPart.Position = Vector3.new(0, 0, 0) -- Hide visual part
+            end
+        end
+    end
+)
+
+Mouse.KeyDown:Connect(function(k)
+    if k == getgenv().Key then
+        Locked = not Locked
+        if Locked then
+            enemy = FindNearestEnemy()
+            CamlockState = true
+            if enemy then
+                VisualPart.Position = enemy.Position -- Show visual part
+            end
+        else
+            if enemy ~= nil then
+                enemy = nil
+                CamlockState = false
+                VisualPart.Position = Vector3.new(0, 0, 0) -- Hide visual part
+            end
+        end
+    end
+end)
+
+local Hellbound = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local Logo = Instance.new("ImageLabel")
+local TextButton = Instance.new("TextButton")
+local UICorner_2 = Instance.new("UICorner")
+
+--Properties:
+
+Hellbound.Name = "Ez GGs Clicks"
+Hellbound.Parent = game.CoreGui
+Hellbound.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Frame.Parent = Hellbound
+Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderSizePixel = 0
+Frame.Position = UDim2.new(0.133798108, 0, 0.20107238, 0)
+Frame.Size = UDim2.new(0, 150, 0, 50)
+Frame.Active = true
+Frame.Draggable = true
+
+local function TopContainer()
+    Frame.Position = UDim2.new(0.5, -Frame.AbsoluteSize.X / 2, 0, -Frame.AbsoluteSize.Y / 2)
+end
+
+TopContainer()
+Frame:GetPropertyChangedSignal("AbsoluteSize"):Connect(TopContainer)
+
+UICorner.Parent = Frame
+
+Logo.Name = "Logo"
+Logo.Parent = Frame
+Logo.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+Logo.BackgroundTransparency = 3.000
+Logo.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Logo.BorderSizePixel = 0
+Logo.Position = UDim2.new(0.326732665, 0, 0, 0)
+Logo.Size = UDim2.new(0, 70, 0, 70)
+Logo.Image = "rbxassetid://7129155278"
+Logo.ImageTransparency = 0.300
+
+TextButton.Parent = Frame
+TextButton.BackgroundColor3 = Color3.fromRGB(101, 55, 229)
+TextButton.BackgroundTransparency = 5.000
+TextButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton.BorderSizePixel = 0
+TextButton.Position = UDim2.new(0.0792079195, 0, 0.18571429, 0)
+TextButton.Size = UDim2.new(0, 120, 0, 30)
+TextButton.Font = Enum.Font.SourceSansSemibold
+TextButton.Text = "Ez GGs"
+TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton.TextScaled = true
+TextButton.TextSize = 18.000
+TextButton.TextWrapped = true
+local state = true
+TextButton.MouseButton1Click:Connect(
+    function()
+        state = not state
+        if not state then
+            TextButton.Text = "Yx.GG On :)"
+            CamlockState = true
+            enemy = FindNearestEnemy()
+            if enemy then
+                VisualPart.Position = enemy.Position -- Show visual part
+            end
+        else
+            TextButton.Text = "Yx.GG Off :("
+            CamlockState = false
+            enemy = nil
+            VisualPart.Position = Vector3.new(0, 0, 0) -- Hide visual part
+        end
+    end
+)
+
+-- Function to hide the loading screen after a certain duration
+local function HideLoadingScreen()
+    LoadingScreen:Destroy()
+end
+
+end)
+
+local tab = DrRayLibrary.newTab("Resolver", "ImageIdHere")
+tab.newButton("Resolver", "little work", function()
+    local RunService = game:GetService("RunService")
+
+local function zeroOutYVelocity(hrp)
+    hrp.Velocity = Vector3.new(hrp.Velocity.X, 0, hrp.Velocity.Z)
+    hrp.AssemblyLinearVelocity = Vector3.new(hrp.Velocity.X, 0, hrp.Velocity.Z)
+end
+
+local function onPlayerAdded(player)
+    player.CharacterAdded:Connect(function(character)
+        local hrp = character:WaitForChild("HumanoidRootPart")
+        zeroOutYVelocity(hrp)
+    end)
+end
+
+local function onPlayerRemoving(player)
+    player.CharacterAdded:Disconnect()
+end
+
+game.Players.PlayerAdded:Connect(onPlayerAdded)
+game.Players.PlayerRemoving:Connect(onPlayerRemoving)
+
+RunService.Heartbeat:Connect(function()
+    pcall(function()
+        for i, player in pairs(game.Players:GetChildren()) do
+            if player.Name ~= game.Players.LocalPlayer.Name then
+                local hrp = player.Character.HumanoidRootPart
+                zeroOutYVelocity(hrp)
+            end
+        end
+    end)
+end)
+
+end)
+
+local tab = DrRayLibrary.newTab("Xeno By !Sz", "ImageIdHere")
+
+
+
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Yx.GG Make Ur Ez GGs";
+    Text = "for update: https://discord.com/invite/cMzPqDGwRV";
+    Duration = 20;
+})
