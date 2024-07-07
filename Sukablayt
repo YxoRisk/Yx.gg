@@ -367,7 +367,7 @@ local CamlockState = false
 
 -- Generate a random prediction value between 0.192311 and 0.19877
 local function GenerateRandomPrediction()
-    return math.random(192323, 198779) / 1000000
+    return math.random(192323, 192324) / 1000000
 end
 
 local Prediction = GenerateRandomPrediction()
@@ -383,7 +383,7 @@ VisualPart.CanCollide = false
 VisualPart.Transparency = 0.5
 VisualPart.BrickColor = BrickColor.new("Bright red")
 VisualPart.Shape = Enum.PartType.Ball
-VisualPart.Size = Vector3.new(2, 2, 2)
+VisualPart.Size = Vector3.new(1, 1, 1)
 VisualPart.Material = Enum.Material.Neon -- Set the material to neon
 VisualPart.Parent = workspace
 
@@ -439,8 +439,8 @@ RunService.Heartbeat:Connect(
                 -- Check if enemy is between jumping and falling
                 local enemyHumanoid = enemy:FindFirstChildOfClass("Humanoid")
                 if enemyHumanoid then
-                    local isJumpingOrFalling = enemyHumanoid:GetState() == Enum.HumanoidStateType.Freefall or enemyHumanoid:GetState() == Enum.HumanoidStateType.Jumping
-                    if isJumpingOrFalling then
+                    local isBetweenJumpAndFall = enemyHumanoid:GetState() == Enum.HumanoidStateType.Freefall
+                    if isBetweenJumpAndFall then
                         aimPart = enemy.LowerTorso
                         -- Activate tool when enemy is between jumping and falling
                         local LocalPlayerCharacter = LocalPlayer.Character
@@ -460,7 +460,7 @@ RunService.Heartbeat:Connect(
                 VisualPart.Position = predictedPosition
 
                 -- Check if enemy's health is 5 or below
-                if enemyHumanoid and enemyHumanoid.Health <= 1 then
+                if enemyHumanoid and enemyHumanoid.Health <= 5 then
                     CamlockState = false
                     enemy = nil
                     TextButton.Text = "Yx.GG Off :("
@@ -726,7 +726,7 @@ for _, player in pairs(Players:GetPlayers()) do
         ESPLib:CreateTracer(player)
     end
 end
-print("[✅] Not the best but at least it's working")
+print("[âœ…] Not the best but at least it's working")
 
 end)
 
