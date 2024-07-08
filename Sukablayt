@@ -367,7 +367,7 @@ local CamlockState = false
 
 -- Generate a random prediction value between 0.192311 and 0.19877
 local function GenerateRandomPrediction()
-    return math.random(192323, 192324) / 1000000
+    return math.random(192311, 192324) / 1000000
 end
 
 local Prediction = GenerateRandomPrediction()
@@ -439,17 +439,23 @@ RunService.Heartbeat:Connect(
                 -- Check if enemy is between jumping and falling
                 local enemyHumanoid = enemy:FindFirstChildOfClass("Humanoid")
                 if enemyHumanoid then
-                    local isBetweenJumpAndFall = enemyHumanoid:GetState() == Enum.HumanoidStateType.Freefall
-                    if isBetweenJumpAndFall then
+                    local isJumping = enemyHumanoid:GetState() == Enum.HumanoidStateType.Jumping
+                    local isFreefall = enemyHumanoid:GetState() == Enum.HumanoidStateType.Freefall
+                    if isJumping then
+                        -- Do nothing if the enemy is jumping
+                    elseif isFreefall then
                         aimPart = enemy.LowerTorso
-                        -- Activate tool when enemy is between jumping and falling
-                        local LocalPlayerCharacter = LocalPlayer.Character
-                        if LocalPlayerCharacter then
-                            local tool = LocalPlayerCharacter:FindFirstChildWhichIsA("Tool")
-                            if tool then
-                                tool:Activate()
+                        
+                        -- Add delay before activating the tool
+                        delay(0.25, function() -- Adjust the delay time as needed
+                            local LocalPlayerCharacter = LocalPlayer.Character
+                            if LocalPlayerCharacter then
+                                local tool = LocalPlayerCharacter:FindFirstChildWhichIsA("Tool")
+                                if tool then
+                                    tool:Activate()
+                                end
                             end
-                        end
+                        end)
                     end
                 end
                 
@@ -726,7 +732,7 @@ for _, player in pairs(Players:GetPlayers()) do
         ESPLib:CreateTracer(player)
     end
 end
-print("[âœ…] Not the best but at least it's working")
+print("[✅] Not the best but at least it's working")
 
 end)
 
