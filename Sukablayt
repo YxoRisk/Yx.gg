@@ -367,7 +367,7 @@ local CamlockState = false
 
 -- Generate a random prediction value between 0.192311 and 0.19877
 local function GenerateRandomPrediction()
-    return math.random(192324, 259929) / 1000000
+    return math.random(190000, 259929) / 1000000
 end
 
 local Prediction = GenerateRandomPrediction()
@@ -398,7 +398,7 @@ function FindNearestEnemy()
     for _, Player in ipairs(game:GetService("Players"):GetPlayers()) do
         if Player ~= LocalPlayer then
             local Character = Player.Character
-            if Character and Character:FindFirstChild("HumanoidRootPart") and Character.Humanoid.Health > 0 then
+            if Character and Character:FindFirstChild("UpperTorso") and Character.Humanoid.Health > 0 then
                 local Position, IsVisibleOnViewport =
                     game:GetService("Workspace").CurrentCamera:WorldToViewportPoint(Character.HumanoidRootPart.Position)
 
@@ -434,7 +434,7 @@ RunService.Heartbeat:Connect(
         if CamlockState == true then
             if enemy then
                 local camera = workspace.CurrentCamera
-                local aimPart = enemy.HumanoidRootPart
+                local aimPart = enemy.UpperTorso
                 
                 -- Check if enemy is between jumping and falling
                 local enemyHumanoid = enemy:FindFirstChildOfClass("Humanoid")
