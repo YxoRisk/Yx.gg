@@ -398,7 +398,7 @@ function FindNearestEnemy()
     for _, Player in ipairs(game:GetService("Players"):GetPlayers()) do
         if Player ~= LocalPlayer then
             local Character = Player.Character
-            if Character and Character:FindFirstChild("UpperTorso") and Character.Humanoid.Health > 0 then
+            if Character and Character:FindFirstChild("HumanoidRootPart") and Character.Humanoid.Health > 0 then
                 local Position, IsVisibleOnViewport =
                     game:GetService("Workspace").CurrentCamera:WorldToViewportPoint(Character.HumanoidRootPart.Position)
 
@@ -434,7 +434,7 @@ RunService.Heartbeat:Connect(
         if CamlockState == true then
             if enemy then
                 local camera = workspace.CurrentCamera
-                local aimPart = enemy.UpperTorso
+                local aimPart = enemy.LowerTorso
                 
                 -- Check if enemy is between jumping and falling
                 local enemyHumanoid = enemy:FindFirstChildOfClass("Humanoid")
@@ -446,12 +446,12 @@ RunService.Heartbeat:Connect(
 
                     if isJumping then
                         -- Vertical offset for jumping enemy
-                        local jumpOffsetY = 0.06 -- Adjust as needed
+                        local jumpOffsetY = 0.041178184559740144 -- Adjust as needed
 
                         aimPart = enemy.LowerTorso.Position + Vector3.new(0, jumpOffsetY, 0)
                     elseif isFreefall then
                         -- Add delay before activating the tool
-                        delay(0.9, function() -- Adjust the delay time as needed
+                        delay(0.3, function() -- Adjust the delay time as needed
                             local LocalPlayerCharacter = LocalPlayer.Character
                             if LocalPlayerCharacter then
                                 local tool = LocalPlayerCharacter:FindFirstChildWhichIsA("Tool")
@@ -594,6 +594,7 @@ TextButton.MouseButton1Click:Connect(
         end
     end
 )
+
 
 end)
 
