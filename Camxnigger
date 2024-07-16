@@ -242,3 +242,9 @@ TextButton.MouseButton1Click:Connect(
         end
     end
 )
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Yx.GGsXPaid";
+    Text = "for update: https://discord.com/invite/cMzPqDGwRV";
+    Duration = 20;
+})
