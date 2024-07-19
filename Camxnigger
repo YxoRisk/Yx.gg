@@ -6,7 +6,7 @@ local Mouse = LocalPlayer:GetMouse()
 local CamlockState = false
 
 -- Assume a bullet speed (you can adjust this value)
-local BulletSpeed = math.random(190, 280)
+local BulletSpeed = nil
 
 -- Function to calculate the time it takes for the bullet to reach the target
 local function CalculateBulletTravelTime(distance)
