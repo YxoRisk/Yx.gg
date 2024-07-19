@@ -27,7 +27,7 @@ end
 local Locked = true
 
 getgenv().Key = "q"
-local airshotEnabled = Yx.Settings.Airshot.Toggled -- Toggle for airshot
+local airshotEnabled = Yx.Airshot.Toggled 
 
 local function ToggleAirshot()
     airshotEnabled = not airshotEnabled
@@ -111,12 +111,12 @@ RunService.Heartbeat:Connect(
 
                         if isJumping then
                             -- Vertical offset for jumping enemy
-                            local jumpOffsetY = Yx.Settings.Airshot.PredYoffset -- Adjust as needed
+                            local jumpOffsetY = 0.0579 -- Adjust as needed
 
                             aimPart = enemy.LowerTorso.Position + Vector3.new(0, jumpOffsetY, 0)
                         elseif isFreefall then
                             -- Add delay before activating the tool
-                            delay(Yx.Settings.Airshot.Delay, function() -- Adjust the delay time as needed
+                            delay(0.9, function() -- Adjust the delay time as needed
                                 local LocalPlayerCharacter = LocalPlayer.Character
                                 if LocalPlayerCharacter then
                                     local tool = LocalPlayerCharacter:FindFirstChildWhichIsA("Tool")
