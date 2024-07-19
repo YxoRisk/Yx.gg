@@ -7,6 +7,7 @@ local CamlockState = false
 
 -- Assume a bullet speed (you can adjust this value)
 local BulletSpeed = Yx.Settings.Prediction
+
 -- Function to calculate the time it takes for the bullet to reach the target
 local function CalculateBulletTravelTime(distance)
     return distance / BulletSpeed
@@ -26,6 +27,23 @@ end
 local Locked = true
 
 getgenv().Key = "q"
+local airshotEnabled = Yx.Settings.Airshot.Toggled -- Toggle for airshot
+
+local function ToggleAirshot()
+    airshotEnabled = not airshotEnabled
+    if airshotEnabled then
+        print("Airshot enabled")
+    else
+        print("Airshot disabled")
+    end
+end
+
+-- Add input for toggle airshot (e.g., key 'e')
+Mouse.KeyDown:Connect(function(k)
+    if k == "e" then
+        ToggleAirshot()
+    end
+end)
 
 -- Create a part to visualize the locked target
 local VisualPart = Instance.new("Part")
@@ -82,39 +100,41 @@ RunService.Heartbeat:Connect(
                 local camera = workspace.CurrentCamera
                 local aimPart = enemy.HumanoidRootPart
                 
-                -- Check if enemy is between jumping and falling
-                local enemyHumanoid = enemy:FindFirstChildOfClass("Humanoid")
-                if enemyHumanoid then
-                    local isJumping = enemyHumanoid:GetState() == Enum.HumanoidStateType.Jumping
-                    local isFreefall = enemyHumanoid:GetState() == Enum.HumanoidStateType.Freefall
-                    local isFallingDown = enemyHumanoid:GetState() == Enum.HumanoidStateType.FallingDown
-                    local isSeated = enemyHumanoid:GetState() == Enum.HumanoidStateType.Seated
+                if airshotEnabled then
+                    -- Check if enemy is between jumping and falling
+                    local enemyHumanoid = enemy:FindFirstChildOfClass("Humanoid")
+                    if enemyHumanoid then
+                        local isJumping = enemyHumanoid:GetState() == Enum.HumanoidStateType.Jumping
+                        local isFreefall = enemyHumanoid:GetState() == Enum.HumanoidStateType.Freefall
+                        local isFallingDown = enemyHumanoid:GetState() == Enum.HumanoidStateType.FallingDown
+                        local isSeated = enemyHumanoid:GetState() == Enum.HumanoidStateType.Seated
 
-                    if isJumping then
-                        -- Vertical offset for jumping enemy
-                        local jumpOffsetY = 0.0579 -- Adjust as needed
+                        if isJumping then
+                            -- Vertical offset for jumping enemy
+                            local jumpOffsetY = Yx.Settings.Airshot.PredYoffset -- Adjust as needed
 
-                        aimPart = enemy.LowerTorso.Position + Vector3.new(0, jumpOffsetY, 0)
-                    elseif isFreefall then
-                        -- Add delay before activating the tool
-                        delay(0.9, function() -- Adjust the delay time as needed
+                            aimPart = enemy.LowerTorso.Position + Vector3.new(0, jumpOffsetY, 0)
+                        elseif isFreefall then
+                            -- Add delay before activating the tool
+                            delay(Yx.Settings.Airshot.Delay, function() -- Adjust the delay time as needed
+                                local LocalPlayerCharacter = LocalPlayer.Character
+                                if LocalPlayerCharacter then
+                                    local tool = LocalPlayerCharacter:FindFirstChildWhichIsA("Tool")
+                                    if tool then
+                                        tool:Activate()
+                                    end
+                                end
+                            end)
+                        elseif isFallingDown or isSeated then
+                            -- Do not activate the tool if the enemy is falling down or seated
+                        else
+                            -- Deactivate the tool when the enemy is on the ground
                             local LocalPlayerCharacter = LocalPlayer.Character
                             if LocalPlayerCharacter then
                                 local tool = LocalPlayerCharacter:FindFirstChildWhichIsA("Tool")
                                 if tool then
-                                    tool:Activate()
+                                    tool:Deactivate()
                                 end
-                            end
-                        end)
-                    elseif isFallingDown or isSeated then
-                        -- Do not activate the tool if the enemy is falling down or seated
-                    else
-                        -- Deactivate the tool when the enemy is on the ground
-                        local LocalPlayerCharacter = LocalPlayer.Character
-                        if LocalPlayerCharacter then
-                            local tool = LocalPlayerCharacter:FindFirstChildWhichIsA("Tool")
-                            if tool then
-                                tool:Deactivate()
                             end
                         end
                     end
@@ -222,6 +242,7 @@ TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextButton.TextScaled = true
 TextButton.TextSize = 18.000
 TextButton.TextWrapped = true
+
 local state = true
 TextButton.MouseButton1Click:Connect(
     function()
