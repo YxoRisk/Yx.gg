@@ -27,7 +27,7 @@ end
 local Locked = true
 
 getgenv().Key = "q"
-local airshotEnabled = Yx.Airshot.Toggled 
+local airshotEnabled = Yx.Settings.Airshot.Toggled
 
 local function ToggleAirshot()
     airshotEnabled = not airshotEnabled
