@@ -5,8 +5,10 @@ local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local CamlockState = false
 
--- Assume a bullet speed (you can adjust this value)
-local BulletSpeed = Yx.Settings.Prediction
+-- Constants
+local BulletSpeed = Yx.Settings.Prediction -- Sesuaikan kecepatan peluru sesuai dengan game Anda
+local MaxIterations = math.huge -- Menggunakan nilai iterasi besar yang masih masuk akal
+
 -- Function to calculate the time it takes for the bullet to reach the target
 local function CalculateBulletTravelTime(distance)
     return distance / BulletSpeed
@@ -14,17 +16,39 @@ end
 
 -- Function to generate a prediction based on the bullet travel time
 local function GenerateAccuratePrediction(enemy)
-    if enemy and enemy.HumanoidRootPart then
-        local distance = (enemy.HumanoidRootPart.Position - workspace.CurrentCamera.CFrame.Position).Magnitude
+    if enemy and enemy:FindFirstChild("HumanoidRootPart") then
+        local currentPosition = enemy.HumanoidRootPart.Position
+        local velocity = enemy.HumanoidRootPart.Velocity
+        local cameraPosition = workspace.CurrentCamera.CFrame.Position
+
+        -- Initial distance and travel time calculation
+        local distance = (currentPosition - cameraPosition).Magnitude
         local travelTime = CalculateBulletTravelTime(distance)
-        return enemy.HumanoidRootPart.Velocity * travelTime
+
+        -- Predict the future position of the enemy
+        local predictedPosition = currentPosition + (velocity * travelTime)
+        local previousTravelTime
+
+        -- Iterate to improve accuracy
+        for i = 1, MaxIterations do
+            distance = (predictedPosition - cameraPosition).Magnitude
+            previousTravelTime = travelTime
+            travelTime = CalculateBulletTravelTime(distance)
+            predictedPosition = currentPosition + (velocity * travelTime)
+
+            -- Break if the travel time converges
+            if math.abs(previousTravelTime - travelTime) < 0.01 then
+                break
+            end
+        end
+
+        return predictedPosition - currentPosition
     else
-        return Vector3.new(0, 0, 0)
+        return Vector3.new(math.huge, math.huge, math.huge)
     end
 end
 
 local Locked = true
-
 getgenv().Key = "q"
 
 -- Create a part to visualize the locked target
@@ -32,9 +56,9 @@ local VisualPart = Instance.new("Part")
 VisualPart.Anchored = true
 VisualPart.CanCollide = false
 VisualPart.Transparency = 0.5
-VisualPart.BrickColor = BrickColor.new("Bright red")
-VisualPart.Shape = Enum.PartType.Ball
-VisualPart.Size = Vector3.new(1, 1, 1)
+VisualPart.BrickColor = BrickColor.new("purple")
+VisualPart.Shape = Enum.PartType.Block
+VisualPart.Size = Vector3.new(1.5, 5, 1.5)
 VisualPart.Material = Enum.Material.Neon -- Set the material to neon
 VisualPart.Parent = workspace
 
@@ -73,6 +97,7 @@ function FindNearestEnemy()
 end
 
 local enemy = nil
+local autoShoot = false
 
 -- Function to aim the camera at the nearest enemy's HumanoidRootPart
 RunService.Heartbeat:Connect(
@@ -96,16 +121,7 @@ RunService.Heartbeat:Connect(
 
                         aimPart = enemy.LowerTorso.Position + Vector3.new(0, jumpOffsetY, 0)
                     elseif isFreefall then
-                        -- Add delay before activating the tool
-                        delay(0.9, function() -- Adjust the delay time as needed
-                            local LocalPlayerCharacter = LocalPlayer.Character
-                            if LocalPlayerCharacter then
-                                local tool = LocalPlayerCharacter:FindFirstChildWhichIsA("Tool")
-                                if tool then
-                                    tool:Activate()
-                                end
-                            end
-                        end)
+                        -- Freefall behavior is managed below
                     elseif isFallingDown or isSeated then
                         -- Do not activate the tool if the enemy is falling down or seated
                     else
@@ -133,6 +149,17 @@ RunService.Heartbeat:Connect(
                     enemy = nil
                     TextButton.Text = "Yx.GG Off :("
                     VisualPart.Position = Vector3.new(0, 0, 0) -- Hide visual part
+                end
+
+                -- Auto shoot logic
+                if autoShoot then
+                    local LocalPlayerCharacter = LocalPlayer.Character
+                    if LocalPlayerCharacter then
+                        local tool = LocalPlayerCharacter:FindFirstChildWhichIsA("Tool")
+                        if tool then
+                            tool:Activate()
+                        end
+                    end
                 end
             end
 
@@ -206,7 +233,7 @@ Logo.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Logo.BorderSizePixel = 0
 Logo.Position = UDim2.new(0.326732665, 0, 0, 0)
 Logo.Size = UDim2.new(0, 70, 0, 70)
-Logo.Image = "rbxassetid://7129155278"
+Logo.Image = "rbxassetid://18561386403"
 Logo.ImageTransparency = 0.300
 
 TextButton.Parent = Frame
@@ -223,30 +250,82 @@ TextButton.TextScaled = true
 TextButton.TextSize = 18.000
 TextButton.TextWrapped = true
 local state = true
-TextButton.MouseButton1Click:Connect(
-    function()
-        state = not state
-        if not state then
-            TextButton.Text = "Yx.GG On :)"
-            CamlockState = true
-            enemy = FindNearestEnemy()
-            if enemy then
-                VisualPart.Position = enemy.Position -- Show visual part
-            end
-        else
-            TextButton.Text = "Yx.GG Off :("
-            CamlockState = false
-            enemy = nil
-            VisualPart.Position = Vector3.new(0, 0, 0) -- Hide visual part
+TextButton.MouseButton1Click:Connect(function()
+    state = not state
+    if not state then
+        TextButton.Text = "Yx.GG On :)"
+        CamlockState = true
+        enemy = FindNearestEnemy()
+        if enemy then
+            VisualPart.Position = enemy.Position -- Show visual part
         end
+    else
+        TextButton.Text = "Yx.GG Off :("
+        CamlockState = false
+        enemy = nil
+        VisualPart.Position = Vector3.new(0, 0, 0) -- Hide visual part
     end
-)
+end)
+
+-- Add toggle for auto shoot in the GUI
+local AutoShootButton = Instance.new("TextButton")
+AutoShootButton.Parent = Frame
+AutoShootButton.BackgroundColor3 = Color3.fromRGB(101, 55, 229)
+AutoShootButton.BackgroundTransparency = 5.000
+AutoShootButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+AutoShootButton.BorderSizePixel = 0
+AutoShootButton.Position = UDim2.new(0.0792079195, 0, -0.7, 0)
+AutoShootButton.Size = UDim2.new(0, 120, 0, 30)
+AutoShootButton.Font = Enum.Font.SourceSansSemibold
+AutoShootButton.Text = "Auto Shoot Off"
+AutoShootButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AutoShootButton.TextScaled = true
+AutoShootButton.TextSize = 14.000
+AutoShootButton.TextWrapped = true
+
+AutoShootButton.MouseButton1Click:Connect(function()
+    autoShoot = not autoShoot
+    if autoShoot then
+        AutoShootButton.Text = "Auto Shoot On"
+    else
+        AutoShootButton.Text = "Auto Shoot Off"
+    end
+end)
+
+UICorner_2.Parent = AutoShootButton
+
+-- Function to ensure the frame is centered when dragged
+local function TopContainer()
+    Frame.Position = UDim2.new(0.5, -Frame.AbsoluteSize.X / 2, 0, -Frame.AbsoluteSize.Y / 2)
+end
+
+TopContainer()
+Frame:GetPropertyChangedSignal("AbsoluteSize"):Connect(TopContainer)
+
+-- Continue with your existing scripts...
 
 game.StarterGui:SetCore("SendNotification", {
-    Title = "Yx.GGsXPaid";
+    Title = "Yx.GGsXCam";
     Text = "for update: https://discord.com/invite/cMzPqDGwRV";
     Duration = 20;
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
