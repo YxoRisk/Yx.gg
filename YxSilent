@@ -24,8 +24,8 @@ getgenv().Silent = {
         
         Prediction = {
             Toggled = true,
-            Horizontal = Yx.Settings.PredictionHorizontal,
-            Vertical = Yx.Settings.PredictionVertical,
+            Horizontal = Yx.Settings.PredictionHorizontal
+            Vertical = Yx.Settings.PredictionVertical
         },
        
         Circle = {
