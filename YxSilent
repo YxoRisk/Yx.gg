@@ -17,7 +17,7 @@ local TargetedPlayerAimPart = nil
 
 --> Silent Aim | Global Variables <--
 getgenv().Silent = {
-    Settings = {
+    Settings= {
         Toggled = true,
         AimPart = "HumanoidRootPart",
         HitChance = 100,
@@ -190,12 +190,12 @@ end
 --> Update Prediction Value Based on Ping
 --]]
 RunService.Stepped:Connect(function()
-    if Silent.Settings.Prediction.Toggled then
+    if Silent.Prediction.Toggled then
         local pingvalue = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
         local split = string.split(pingvalue, '(')
         local ping = tonumber(split[1])
 
-        Silent.Settings.Prediction.Horizontal = generatePredictionValue(ping)
+        Silent.Prediction.Horizontal = generatePredictionValue(ping)
     end
 end)
 
@@ -206,15 +206,15 @@ local old = mt.__namecall
 setreadonly(mt, false)
 mt.__namecall = newcclosure(function(...)
     local args = {...}
-    if Silent.Settings.Toggled and getnamecallmethod() == "FireServer" and TargetedPlayer and TargetedPlayerCharacter and TargetedPlayerAimPart then
+    if Silent.Toggled and getnamecallmethod() == "FireServer" and TargetedPlayer and TargetedPlayerCharacter and TargetedPlayerAimPart then
         if args[2] == "UpdateMousePos" then
-            if Silent.Settings.Prediction.Toggled then
+            if Silent.Prediction.Toggled then
                 if type(args[3]) == "table" then
                     args[3] = {
-                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Prediction.Horizontal)
                     }
                 else
-                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Prediction.Horizontal)
                 end
             else
                 if type(args[3]) == "table" then
@@ -226,13 +226,13 @@ mt.__namecall = newcclosure(function(...)
                 end
             end
         elseif args[2] == "MOUSE" then
-            if Silent.Settings.Prediction.Toggled then
+            if Silent.Prediction.Toggled then
                 if type(args[3]) == "table" then
                     args[3] = {
-                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Prediction.Horizontal)
                     }
                 else
-                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Prediction.Horizontal)
                 end
             else
                 if type(args[3]) == "table" then
@@ -244,13 +244,13 @@ mt.__namecall = newcclosure(function(...)
                 end
             end
         elseif args[2] == "MousePos" then
-            if Silent.Settings.Prediction.Toggled then
+            if Silent.Prediction.Toggled then
                 if type(args[3]) == "table" then
                     args[3] = {
-                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Prediction.Horizontal)
                     }
                 else
-                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Prediction.Horizontal)
                 end
             else
                 if type(args[3]) == "table" then
@@ -322,7 +322,6 @@ local function SendCustomNotification(title, description)
 end
 
 SendCustomNotification(YxGGs, BetaTester/YxSilent)
-
 
 
 
