@@ -18,11 +18,10 @@ local TargetedPlayerAimPart = nil
 --> Silent Aim | Global Variables <--
 getgenv().Silent = {
     Settings = {
-        Toggled = true,
-        AimPart = "HumanoidRootPart",
-        HitChance = 100,
+        Toggled = true
+        AimPart = "HumanoidRootPart"
+        HitChance = 100
         },
-       
     },
 }
 
