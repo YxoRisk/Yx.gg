@@ -22,15 +22,6 @@ getgenv().Silent = {
         AimPart = "HumanoidRootPart",
         HitChance = 100,
         
-        Circle = {
-            Visible = true,
-            Color = Color3.fromRGB(255, 255, 255),
-            Transparency = 1,
-            Thickness = 1,
-            NumSides = 1000,
-            Radius = 8,
-            Filled = false,
-        },
     },
 }
 
