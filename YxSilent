@@ -21,7 +21,6 @@ getgenv().Silent = {
         Toggled = true,
         AimPart = "HumanoidRootPart",
         HitChance = 100,
-        
     },
 }
 
