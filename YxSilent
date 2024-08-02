@@ -1,0 +1,374 @@
+repeat task.wait() until game:IsLoaded()
+
+--> Services | Variables <--
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+
+--> LocalPlayer | Variables <--
+local player = Players.LocalPlayer
+local playerCamera = Workspace.CurrentCamera
+
+--> Targeted Player | Variables <--
+local TargetedPlayer = nil
+local TargetedPlayerCharacter = nil
+local TargetedPlayerAimPart = nil
+
+--> Silent Aim | Global Variables <--
+getgenv().Silent = {
+    Settings = {
+        Toggled = true,
+        AimPart = "HumanoidRootPart",
+        HitChance = 100,
+        
+        Prediction = {
+            Toggled = true,
+            Horizontal = Yx.Settings.PredictionHorizontal,
+            Vertical = Yx.Settings.PredictionVertical,
+        },
+       
+        Circle = {
+            Visible = true,
+            Color = Color3.fromRGB(255, 255, 255),
+            Transparency = 1,
+            Thickness = 1,
+            NumSides = 1000,
+            Radius = 8,
+            Filled = false,
+        },
+    },
+}
+
+local Hit_Success = false -- don't touch this.
+
+--> ScreenGui | Variables <--
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = CoreGui
+ScreenGui.Name = "ScreenGui"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.IgnoreGuiInset = false
+ScreenGui.DisplayOrder = 9e9
+ScreenGui.Enabled = true
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.AutoLocalize = true
+ScreenGui.Archivable = true
+
+--> FOV Circle | Variables <--
+local FOVCircle = Drawing.new("Circle")
+FOVCircle.Visible = Silent.Settings.Circle.Visible
+FOVCircle.Color = Silent.Settings.Circle.Color
+FOVCircle.Transparency = Silent.Settings.Circle.Transparency
+FOVCircle.Thickness = Silent.Settings.Circle.Thickness
+FOVCircle.NumSides = Silent.Settings.Circle.NumSides
+FOVCircle.Radius = playerCamera.ViewportSize.X / Silent.Settings.Circle.Radius
+FOVCircle.Filled = Silent.Settings.Circle.Filled
+FOVCircle.Position = Vector2.new(playerCamera.ViewportSize.X / 2, playerCamera.ViewportSize.Y / 2)
+
+--> Tracer | Variables <--
+local function CreateTracer()
+    local tracer = Drawing.new("Line")
+    tracer.Visible = false
+    tracer.Color = Color3.fromRGB(160, 32, 240)
+    tracer.Thickness = 1
+    tracer.From = Vector2.new(0, 0)
+    tracer.To = Vector2.new(0, 0)
+    return tracer
+end
+
+local tracer = CreateTracer()
+
+--> Function To Handle LocalPlayer Respawns <--
+player.CharacterAdded:Connect(function(NewCharacter)
+    playerCharacter = NewCharacter
+end)
+
+--> Function To Get The Closest Player <--
+local function GetClosestPlayer()
+    local ClosestPlayer = nil
+    local ShortestDistance = math.huge
+
+    for _, Player in ipairs(Players:GetPlayers()) do
+        if Player ~= player and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+            local playerRootPart = Player.Character.HumanoidRootPart
+            local PlayerScreenPosition = playerCamera:WorldToViewportPoint(playerRootPart.Position)
+            local Direction = (playerRootPart.Position - playerCamera.CFrame.Position).unit
+            local DotProduct = playerCamera.CFrame.LookVector:Dot(Direction)
+
+            if DotProduct > 0 then
+                local MagnitudeDistance = (Vector2.new(PlayerScreenPosition.X, PlayerScreenPosition.Y) - FOVCircle.Position).Magnitude
+
+                if MagnitudeDistance < ShortestDistance and MagnitudeDistance <= FOVCircle.Radius then
+                    local ray = Ray.new(playerCamera.CFrame.Position, (playerRootPart.Position - playerCamera.CFrame.Position).unit * (playerRootPart.Position - playerCamera.CFrame.Position).magnitude)
+                    local hitPart, hitPosition = Workspace:FindPartOnRay(ray, player.Character, false, true)
+
+                    if not hitPart or hitPart:IsDescendantOf(Player.Character) then
+                        ClosestPlayer = Player
+                        ShortestDistance = MagnitudeDistance
+                    end
+                end
+            end
+        end
+    end
+    return ClosestPlayer
+end
+
+--> Function To Get Closest AimPart Based on Screen Center <--
+local function GetClosestAimPart(targetPlayer)
+    local aimParts = {
+        "Head", "UpperTorso", "HumanoidRootPart", "LowerTorso",
+        "LeftHand", "RightHand", "LeftLowerArm", "RightLowerArm",
+        "LeftUpperArm", "RightUpperArm", "LeftFoot", "LeftLowerLeg",
+        "LeftUpperLeg", "RightLowerLeg", "RightFoot", "RightUpperLeg"
+    }
+
+    local screenCenter = Vector2.new(playerCamera.ViewportSize.X / 2, playerCamera.ViewportSize.Y / 2)
+    local closestPart = nil
+    local closestDistance = math.huge
+
+    for _, partName in ipairs(aimParts) do
+        local part = targetPlayer.Character:FindFirstChild(partName)
+        if part and part:IsA("BasePart") and part.Transparency < 1 then
+            local screenPosition = playerCamera:WorldToViewportPoint(part.Position)
+            local distance = (Vector2.new(screenPosition.X, screenPosition.Y) - screenCenter).Magnitude
+
+            if distance < closestDistance then
+                closestDistance = distance
+                closestPart = part
+            end
+        end
+    end
+
+    return closestPart
+end
+
+--> Function To Handle Targeted Player Variables <-- 
+RunService.RenderStepped:Connect(function(deltaTime)
+    TargetedPlayer = GetClosestPlayer()
+    if TargetedPlayer and TargetedPlayer.Character then
+        TargetedPlayerCharacter = TargetedPlayer.Character
+        TargetedPlayerAimPart = GetClosestAimPart(TargetedPlayer)
+        if TargetedPlayerAimPart then
+            local aimPartScreenPosition = playerCamera:WorldToViewportPoint(TargetedPlayerAimPart.Position)
+            tracer.Visible = true
+            tracer.From = Vector2.new(playerCamera.ViewportSize.X / 2, playerCamera.ViewportSize.Y / 2)
+            tracer.To = Vector2.new(aimPartScreenPosition.X, aimPartScreenPosition.Y)
+        else
+            tracer.Visible = false
+        end
+    else
+        tracer.Visible = false
+    end
+end)
+
+--[[
+--> Variables
+--]]
+local lastNotificationTime = 0
+local pingvalue = nil
+local split = nil
+local ping = nil
+
+--[[
+--> Generate Prediction Value Function
+--]]
+local function generatePredictionValue(ping)
+    local baseValues = {
+        {maxPing = 10, base = 0.15},
+        {maxPing = 30, base = 0.115},
+        {maxPing = 50, base = 0.125},
+        {maxPing = 70, base = 0.135},
+        {maxPing = 90, base = 0.145},
+        {maxPing = 110, base = 0.155},
+        {maxPing = 130, base = 0.165},
+        {maxPing = 150, base = 0.175},
+        {maxPing = 170, base = 0.185},
+        {maxPing = 190, base = 0.195},
+        {maxPing = 210, base = 0.205},
+        {maxPing = 230, base = 0.215},
+        {maxPing = 250, base = 0.225},
+        -- Add more if needed
+    }
+
+    local predictionGenerator = 0.37392719273825859949484065118353959159196269396
+    for _, range in ipairs(baseValues) do
+        if ping <= range.maxPing then
+            predictionGenerator = range.base
+            break
+        end
+    end
+
+    return predictionGenerator
+end
+
+--[[
+--> Update Prediction Value Based on Ping
+--]]
+RunService.Stepped:Connect(function()
+    if Silent.Settings.Prediction.Toggled then
+        local pingvalue = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
+        local split = string.split(pingvalue, '(')
+        local ping = tonumber(split[1])
+
+        Silent.Settings.Prediction.Horizontal = generatePredictionValue(ping)
+    end
+end)
+
+--> RawMetaTable | Variables <--
+local mt = getrawmetatable(game)
+local old = mt.__namecall
+
+setreadonly(mt, false)
+mt.__namecall = newcclosure(function(...)
+    local args = {...}
+    if Silent.Settings.Toggled and getnamecallmethod() == "FireServer" and TargetedPlayer and TargetedPlayerCharacter and TargetedPlayerAimPart then
+        if args[2] == "UpdateMousePos" then
+            if Silent.Settings.Prediction.Toggled then
+                if type(args[3]) == "table" then
+                    args[3] = {
+                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                    }
+                else
+                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                end
+            else
+                if type(args[3]) == "table" then
+                    args[3] = {
+                        TargetedPlayerAimPart.Position
+                    }
+                else
+                    args[3] = TargetedPlayerAimPart.Position
+                end
+            end
+        elseif args[2] == "MOUSE" then
+            if Silent.Settings.Prediction.Toggled then
+                if type(args[3]) == "table" then
+                    args[3] = {
+                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                    }
+                else
+                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                end
+            else
+                if type(args[3]) == "table" then
+                    args[3] = {
+                        TargetedPlayerAimPart.Position
+                    }
+                else
+                    args[3] = TargetedPlayerAimPart.Position
+                end
+            end
+        elseif args[2] == "MousePos" then
+            if Silent.Settings.Prediction.Toggled then
+                if type(args[3]) == "table" then
+                    args[3] = {
+                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                    }
+                else
+                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                end
+            else
+                if type(args[3]) == "table" then
+                    args[3] = {
+                        TargetedPlayerAimPart.Position
+                    }
+                else
+                    args[3] = TargetedPlayerAimPart.Position
+                end
+            end
+        end
+        return old(unpack(args))
+    end
+    return old(...)
+end)
+
+
+-- Function to send a custom notification
+local function SendCustomNotification(title, description)
+    local Notification = Instance.new("ScreenGui")
+    local Frame = Instance.new("Frame")
+    local UICorner = Instance.new("UICorner")
+    local TitleLabel = Instance.new("TextLabel")
+    local DescriptionLabel = Instance.new("TextLabel")
+
+    -- Properties
+    Notification.Name = "NotificationGui"
+    Notification.Parent = game.CoreGui
+    Notification.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+    Frame.Parent = Notification
+    Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Frame.BorderSizePixel = 0
+    Frame.Position = UDim2.new(0.5, -150, 0.8, -30)
+    Frame.Size = UDim2.new(0, 300, 0, 60)
+    Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    Frame.BackgroundTransparency = 0.5
+
+    UICorner.Parent = Frame
+
+    TitleLabel.Parent = Frame
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Position = UDim2.new(0, 0, 0, 0)
+    TitleLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    TitleLabel.Font = Enum.Font.SourceSansBold
+    TitleLabel.Text = title
+    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TitleLabel.TextSize = 18
+    TitleLabel.TextWrapped = true
+    TitleLabel.TextStrokeTransparency = 0.5
+
+    DescriptionLabel.Parent = Frame
+    DescriptionLabel.BackgroundTransparency = 1
+    DescriptionLabel.Position = UDim2.new(0, 0, 0.5, 0)
+    DescriptionLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    DescriptionLabel.Font = Enum.Font.SourceSans
+    DescriptionLabel.Text = description
+    DescriptionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    DescriptionLabel.TextSize = 14
+    DescriptionLabel.TextWrapped = true
+    DescriptionLabel.TextStrokeTransparency = 0.5
+
+    -- Animation
+    Frame.Position = UDim2.new(0.5, -150, 1, 0)
+    Frame:TweenPosition(UDim2.new(0.5, -150, 0.8, -30), "Out", "Quad", 0.5, true)
+    wait(3)
+    Frame:TweenPosition(UDim2.new(0.5, -150, 1, 0), "In", "Quad", 0.5, true)
+    wait(0.5)
+    Notification:Destroy()
+end
+
+SendCustomNotification(YxGGs, BetaTester/YxSilent)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
