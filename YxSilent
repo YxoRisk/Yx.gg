@@ -17,10 +17,19 @@ local TargetedPlayerAimPart = nil
 
 --> Silent Aim | Global Variables <--
 getgenv().Silent = {
-    Settings= {
+    Settings = {
         Toggled = true,
         AimPart = "HumanoidRootPart",
         HitChance = 100,
+        
+        Circle = {
+            Visible = true,
+            Color = Color3.fromRGB(255, 255, 255),
+            Transparency = 1,
+            Thickness = 1,
+            NumSides = 1000,
+            Radius = 8,
+            Filled = false,
         },
     },
 }
@@ -190,12 +199,12 @@ end
 --> Update Prediction Value Based on Ping
 --]]
 RunService.Stepped:Connect(function()
-    if Yx.Prediction.Toggled then
+    if Silent.Prediction.Toggled then
         local pingvalue = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
         local split = string.split(pingvalue, '(')
         local ping = tonumber(split[1])
 
-        Yx.Prediction.Horizontal = generatePredictionValue(ping)
+        Silent.Prediction.Horizontal = generatePredictionValue(ping)
     end
 end)
 
@@ -206,15 +215,15 @@ local old = mt.__namecall
 setreadonly(mt, false)
 mt.__namecall = newcclosure(function(...)
     local args = {...}
-    if Silent.Toggled and getnamecallmethod() == "FireServer" and TargetedPlayer and TargetedPlayerCharacter and TargetedPlayerAimPart then
+    if Silent.Settings.Toggled and getnamecallmethod() == "FireServer" and TargetedPlayer and TargetedPlayerCharacter and TargetedPlayerAimPart then
         if args[2] == "UpdateMousePos" then
-            if Yx.Prediction.Toggled then
+            if Silent.Prediction.Toggled then
                 if type(args[3]) == "table" then
                     args[3] = {
-                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Yx.Prediction.Horizontal)
+                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Prediction.Horizontal)
                     }
                 else
-                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Yx.Prediction.Horizontal)
+                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Prediction.Horizontal)
                 end
             else
                 if type(args[3]) == "table" then
@@ -226,13 +235,13 @@ mt.__namecall = newcclosure(function(...)
                 end
             end
         elseif args[2] == "MOUSE" then
-            if Yx.Prediction.Toggled then
+            if Silent.Prediction.Toggled then
                 if type(args[3]) == "table" then
                     args[3] = {
-                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Yx.Prediction.Horizontal)
+                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Prediction.Horizontal)
                     }
                 else
-                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Yx.Prediction.Horizontal)
+                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Prediction.Horizontal)
                 end
             else
                 if type(args[3]) == "table" then
@@ -247,10 +256,10 @@ mt.__namecall = newcclosure(function(...)
             if Silent.Prediction.Toggled then
                 if type(args[3]) == "table" then
                     args[3] = {
-                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Yx.Prediction.Horizontal)
+                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Prediction.Horizontal)
                     }
                 else
-                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Yx.Prediction.Horizontal)
+                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Prediction.Horizontal)
                 end
             else
                 if type(args[3]) == "table" then
@@ -266,33 +275,3 @@ mt.__namecall = newcclosure(function(...)
     end
     return old(...)
 end)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
