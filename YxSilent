@@ -1,5 +1,3 @@
-repeat task.wait() until game:IsLoaded()
-
 --> Services | Variables <--
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
@@ -21,21 +19,6 @@ getgenv().Silent = {
         Toggled = true,
         AimPart = "HumanoidRootPart",
         HitChance = math.huge,
-        
-        Prediction = {
-            Toggled = true,
-            Horizontal = 0.2,
-            Vertical = 0.13988125,
-        },
-       
-        Circle = {
-            Visible = true,
-            Color = Color3.fromRGB(255, 255, 255),
-            Transparency = 1,
-            Thickness = 1,
-            NumSides = 1000,
-            Radius = 5,
-            Filled = false,
         },
     },
 }
@@ -56,13 +39,13 @@ ScreenGui.Archivable = true
 
 --> FOV Circle | Variables <--
 local FOVCircle = Drawing.new("Circle")
-FOVCircle.Visible = Silent.Settings.Circle.Visible
-FOVCircle.Color = Silent.Settings.Circle.Color
-FOVCircle.Transparency = Silent.Settings.Circle.Transparency
-FOVCircle.Thickness = Silent.Settings.Circle.Thickness
-FOVCircle.NumSides = Silent.Settings.Circle.NumSides
-FOVCircle.Radius = playerCamera.ViewportSize.Y / Silent.Settings.Circle.Radius
-FOVCircle.Filled = Silent.Settings.Circle.Filled
+FOVCircle.Visible = true
+FOVCircle.Color = Color3.fromRGB(255, 255, 255)
+FOVCircle.Transparency = 1
+FOVCircle.Thickness = 1
+FOVCircle.NumSides = 1000
+FOVCircle.Radius = playerCamera.ViewportSize.X / 8
+FOVCircle.Filled = false
 FOVCircle.Position = Vector2.new(playerCamera.ViewportSize.X / 2, playerCamera.ViewportSize.Y / 2)
 
 --> Tracer | Variables <--
@@ -190,7 +173,7 @@ local function generatePredictionValue(ping)
         -- Add more if needed
     }
 
-    local predictionGenerator = 0.37392719273825859949484065118353959159196269396
+    local predictionGenerator = 0.235
     for _, range in ipairs(baseValues) do
         if ping <= range.maxPing then
             predictionGenerator = range.base
@@ -205,12 +188,12 @@ end
 --> Update Prediction Value Based on Ping
 --]]
 RunService.Stepped:Connect(function()
-    if Silent.Settings.Prediction.Toggled then
+    if YxSilent.Settings.Prediction.Toggled then
         local pingvalue = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
         local split = string.split(pingvalue, '(')
         local ping = tonumber(split[1])
 
-        Silent.Settings.Prediction.Horizontal = generatePredictionValue(ping)
+        YxSilent.Settings.Prediction.Horizontal = generatePredictionValue(ping)
     end
 end)
 
@@ -223,55 +206,43 @@ mt.__namecall = newcclosure(function(...)
     local args = {...}
     if Silent.Settings.Toggled and getnamecallmethod() == "FireServer" and TargetedPlayer and TargetedPlayerCharacter and TargetedPlayerAimPart then
         if args[2] == "UpdateMousePos" then
-            if Silent.Settings.Prediction.Toggled then
+            if YxSilent.Settings.Prediction.Toggled then
                 if type(args[3]) == "table" then
-                    args[3] = {
-                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
-                    }
+                    args[3] = {TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * YxSilent.Settings.Prediction.Horizontal)}
                 else
-                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * YxSilent.Settings.Prediction.Horizontal)
                 end
             else
                 if type(args[3]) == "table" then
-                    args[3] = {
-                        TargetedPlayerAimPart.Position
-                    }
+                    args[3] = {TargetedPlayerAimPart.Position}
                 else
                     args[3] = TargetedPlayerAimPart.Position
-                end
+end
             end
         elseif args[2] == "MOUSE" then
-            if Silent.Settings.Prediction.Toggled then
+            if YxSilent.Settings.Prediction.Toggled then
                 if type(args[3]) == "table" then
-                    args[3] = {
-                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
-                    }
+                    args[3] = {TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * YxSilent.Settings.Prediction.Horizontal)}
                 else
-                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * YxSilent.Settings.Prediction.Horizontal)
                 end
             else
                 if type(args[3]) == "table" then
-                    args[3] = {
-                        TargetedPlayerAimPart.Position
-                    }
+                    args[3] = {TargetedPlayerAimPart.Position}
                 else
                     args[3] = TargetedPlayerAimPart.Position
                 end
             end
         elseif args[2] == "MousePos" then
-            if Silent.Settings.Prediction.Toggled then
+            if YxSilent.Settings.Prediction.Toggled then
                 if type(args[3]) == "table" then
-                    args[3] = {
-                        TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
-                    }
+                    args[3] = {TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * YxSilent.Settings.Prediction.Horizontal)}
                 else
-                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * Silent.Settings.Prediction.Horizontal)
+                    args[3] = TargetedPlayerAimPart.Position + (TargetedPlayerAimPart.Velocity * YxSilent.Settings.Prediction.Horizontal)
                 end
             else
                 if type(args[3]) == "table" then
-                    args[3] = {
-                        TargetedPlayerAimPart.Position
-                    }
+                    args[3] = {TargetedPlayerAimPart.Position}
                 else
                     args[3] = TargetedPlayerAimPart.Position
                 end
@@ -282,60 +253,125 @@ mt.__namecall = newcclosure(function(...)
     return old(...)
 end)
 
+--[[
+--> Variables
+--]]
+local SilentAimState = Silent.Settings.Toggled
 
--- Function to send a custom notification
-local function SendCustomNotification(title, description)
-    local Notification = Instance.new("ScreenGui")
-    local Frame = Instance.new("Frame")
-    local UICorner = Instance.new("UICorner")
-    local TitleLabel = Instance.new("TextLabel")
-    local DescriptionLabel = Instance.new("TextLabel")
+--[[
+--> GUI untuk Mengaktifkan dan Menonaktifkan Silent Aim
+--]]
+local SilentAimGui = Instance.new("ScreenGui")
+SilentAimGui.Name = "SilentAimGui"
+SilentAimGui.Parent = CoreGui
+SilentAimGui.ResetOnSpawn = false
+SilentAimGui.IgnoreGuiInset = false
+SilentAimGui.DisplayOrder = 9e9
+SilentAimGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+SilentAimGui.AutoLocalize = true
+SilentAimGui.Archivable = true
 
-    -- Properties
-    Notification.Name = "NotificationGui"
-    Notification.Parent = game.CoreGui
-    Notification.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+local SilentAimFrame = Instance.new("Frame")
+SilentAimFrame.Parent = SilentAimGui
+SilentAimFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+SilentAimFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SilentAimFrame.BorderSizePixel = 0
+SilentAimFrame.Position = UDim2.new(0.1, 0, 0.2, 0)
+SilentAimFrame.Size = UDim2.new(0, 150, 0, 50)
+SilentAimFrame.Active = true
+SilentAimFrame.Draggable = true
 
-    Frame.Parent = Notification
-    Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    Frame.BorderSizePixel = 0
-    Frame.Position = UDim2.new(0.5, -100, 0.8, -30)
-    Frame.Size = UDim2.new(0, 300, 0, 60)
-    Frame.AnchorPoint = Vector2.new(0.5, 0.5)
-    Frame.BackgroundTransparency = 0.5
+local UICorner = Instance.new("UICorner")
+UICorner.Parent = SilentAimFrame
 
-    UICorner.Parent = Frame
+local SilentAimButton = Instance.new("TextButton")
+SilentAimButton.Parent = SilentAimFrame
+SilentAimButton.BackgroundColor3 = Color3.fromRGB(101, 55, 229)
+SilentAimButton.BackgroundTransparency = 5
+SilentAimButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SilentAimButton.BorderSizePixel = 0
+SilentAimButton.Position = UDim2.new(0.1, 0, 0.2, 0)
+SilentAimButton.Size = UDim2.new(0, 120, 0, 30)
+SilentAimButton.Font = Enum.Font.SourceSansSemibold
+SilentAimButton.Text = SilentAimState and "Silent Aim On" or "Silent Aim Off"
+SilentAimButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SilentAimButton.TextScaled = true
+SilentAimButton.TextSize = 18
+SilentAimButton.TextWrapped = true
 
-    TitleLabel.Parent = Frame
-    TitleLabel.BackgroundTransparency = 1
-    TitleLabel.Position = UDim2.new(0, 0, 0, 0)
-    TitleLabel.Size = UDim2.new(1, 0, 0.5, 0)
-    TitleLabel.Font = Enum.Font.SourceSansBold
-    TitleLabel.Text = title
-    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TitleLabel.TextSize = 18
-    TitleLabel.TextWrapped = true
-    TitleLabel.TextStrokeTransparency = 0.5
+SilentAimButton.MouseButton1Click:Connect(function()
+    SilentAimState = not SilentAimState
+    SilentAimButton.Text = SilentAimState and "Silent Aim On" or "Silent Aim Off"
+    Silent.Settings.Toggled = SilentAimState
+end)
 
-    DescriptionLabel.Parent = Frame
-    DescriptionLabel.BackgroundTransparency = 1
-    DescriptionLabel.Position = UDim2.new(0, 0, 0.5, 0)
-    DescriptionLabel.Size = UDim2.new(1, 0, 0.5, 0)
-    DescriptionLabel.Font = Enum.Font.SourceSans
-    DescriptionLabel.Text = description
-    DescriptionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    DescriptionLabel.TextSize = 14
-    DescriptionLabel.TextWrapped = true
-    DescriptionLabel.TextStrokeTransparency = 0.5
+--[[
+--> Sticky Aim Function
+--]]
+local StickyAimState = false
+local enemy = nil
 
-    -- Animation
-    Frame.Position = UDim2.new(0.7, -150, 1, 0)
-    Frame:TweenPosition(UDim2.new(0.728, -145, 0.5, -30), "Out", "Quad", 0.728, true)
-    wait(8)
-    Frame:TweenPosition(UDim2.new(0.728, -150, 1, 0), "In", "Quad", 0.728, true)
-    wait(0.5)
-    Notification:Destroy()
-end
+local StickyAimGui = Instance.new("ScreenGui")
+StickyAimGui.Name = "StickyAimGui"
+StickyAimGui.Parent = CoreGui
+StickyAimGui.ResetOnSpawn = false
+StickyAimGui.IgnoreGuiInset = false
+StickyAimGui.DisplayOrder = 9e9
+StickyAimGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+StickyAimGui.AutoLocalize = true
+StickyAimGui.Archivable = true
 
-SendCustomNotification("Yx.GGs", "YxSilent")
+local StickyAimFrame = Instance.new("Frame")
+StickyAimFrame.Parent = StickyAimGui
+StickyAimFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+StickyAimFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+StickyAimFrame.BorderSizePixel = 0
+StickyAimFrame.Position = UDim2.new(0.1, 0, 0.3, 0)
+StickyAimFrame.Size = UDim2.new(0, 150, 0, 50)
+StickyAimFrame.Active = true
+StickyAimFrame.Draggable = true
 
+local UICorner = Instance.new("UICorner")
+UICorner.Parent = StickyAimFrame
+
+local StickyAimButton = Instance.new("TextButton")
+StickyAimButton.Parent = StickyAimFrame
+StickyAimButton.BackgroundColor3 = Color3.fromRGB(101, 55, 229)
+StickyAimButton.BackgroundTransparency = 5
+StickyAimButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+StickyAimButton.BorderSizePixel = 0
+StickyAimButton.Position = UDim2.new(0.1, 0, 0.2, 0)
+StickyAimButton.Size = UDim2.new(0, 120, 0, 30)
+StickyAimButton.Font = Enum.Font.SourceSansSemibold
+StickyAimButton.Text = "StickyAim Off"
+StickyAimButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+StickyAimButton.TextScaled = true
+StickyAimButton.TextSize = 18
+StickyAimButton.TextWrapped = true
+
+StickyAimButton.MouseButton1Click:Connect(function()
+    StickyAimState = not StickyAimState
+    StickyAimButton.Text = StickyAimState and "StickyAim On" or "StickyAim Off"
+    if StickyAimState then
+        enemy = GetClosestPlayer()
+    else
+        enemy = nil
+    end
+end)
+
+--[[
+--> Sticky Aim Function
+--]]
+RunService.RenderStepped:Connect(function()
+    if StickyAimState and enemy then
+        local targetPart = GetClosestAimPart(enemy)
+        if targetPart then
+            local targetPosition = playerCamera:WorldToViewportPoint(targetPart.Position)
+            FOVCircle.Position = Vector2.new(targetPosition.X, targetPosition.Y)
+        else
+            FOVCircle.Position = Vector2.new(playerCamera.ViewportSize.X / 2, playerCamera.ViewportSize.Y / 2)
+        end
+    else
+        FOVCircle.Position = Vector2.new(playerCamera.ViewportSize.X / 2, playerCamera.ViewportSize.Y / 2)
+    end
+end)
