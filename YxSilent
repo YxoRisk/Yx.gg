@@ -21,8 +21,8 @@ getgenv().Silent = {
         HitChance = math.huge,
         Prediction = {
             Toggled = true,
-            Horizontal = 0,
-            Vertical = 0,
+            Horizontal = 0.16,
+            Vertical = 0.06,
         },
         Circle = {
             Visible = true,
