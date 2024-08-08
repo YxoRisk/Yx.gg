@@ -113,9 +113,8 @@ end
 local function GetClosestAimPart(targetPlayer)
     local aimParts = {
         "Head", "UpperTorso", "HumanoidRootPart", "LowerTorso",
-        "LeftHand", "RightHand", "LeftLowerArm", "RightLowerArm",
-        "LeftUpperArm", "RightUpperArm", "LeftFoot", "LeftLowerLeg",
-        "LeftUpperLeg", "RightLowerLeg", "RightFoot", "RightUpperLeg"
+        "LeftFoot", "LeftLower", "LeftUpperLeg", "RightLowerLeg",
+        "RightFoot", "RightUpperLeg"
     }
 
     local screenCenter = Vector2.new(playerCamera.ViewportSize.X / 2, playerCamera.ViewportSize.Y / 2)
@@ -170,19 +169,19 @@ local ping = nil
 --]]
 local function generatePredictionValue(ping)
     local baseValues = {
-        {maxPing = 10, base = 0.05},
-        {maxPing = 30, base = 0.015},
-        {maxPing = 50, base = 0.025},
-        {maxPing = 70, base = 0.035},
-        {maxPing = 90, base = 0.045},
-        {maxPing = 110, base = 0.055},
-        {maxPing = 130, base = 0.065},
-        {maxPing = 150, base = 0.075},
-        {maxPing = 170, base = 0.085},
-        {maxPing = 190, base = 0.095},
-        {maxPing = 210, base = 0.005},
-        {maxPing = 230, base = 0.015},
-        {maxPing = 250, base = 0.025},
+        {maxPing = 10, base = 0.15},
+        {maxPing = 30, base = 0.115},
+        {maxPing = 50, base = 0.125},
+        {maxPing = 70, base = 0.135},
+        {maxPing = 90, base = 0.145},
+        {maxPing = 110, base = 0.155},
+        {maxPing = 130, base = 0.165},
+        {maxPing = 150, base = 0.175},
+        {maxPing = 170, base = 0.285},
+        {maxPing = 190, base = 0.195},
+        {maxPing = 210, base = 0.205},
+        {maxPing = 230, base = 0.215},
+        {maxPing = 250, base = 0.225},
         -- Add more if needed
     }
 
